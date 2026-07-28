@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160">
+  <!-- プレースホルダー: もこ(normal)。本番画像に差し替え可 -->
+  <g>
+    <ellipse cx="100" cy="120" rx="52" ry="10" fill="#dce9f2" opacity="0.6"/>
+    <g fill="#ffffff" stroke="#e3ecf4" stroke-width="2">
+      <circle cx="70" cy="85" r="26"/>
+      <circle cx="130" cy="85" r="26"/>
+      <circle cx="85" cy="65" r="28"/>
+      <circle cx="115" cy="65" r="28"/>
+      <circle cx="100" cy="90" r="32"/>
+    </g>
+    <ellipse cx="100" cy="82" rx="46" ry="34" fill="#ffffff"/>
+    <ellipse cx="82" cy="112" rx="7" ry="6" fill="#f3d9c8"/>
+    <ellipse cx="118" cy="112" rx="7" ry="6" fill="#f3d9c8"/>
+    <circle cx="88" cy="80" r="3.5" fill="#5a5a66"/>
+    <circle cx="112" cy="80" r="3.5" fill="#5a5a66"/>
+    <path d="M96 92 q4 3 8 0" stroke="#5a5a66" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <ellipse cx="78" cy="90" rx="5" ry="3" fill="#ffd9dc" opacity="0.7"/>
+    <ellipse cx="122" cy="90" rx="5" ry="3" fill="#ffd9dc" opacity="0.7"/>
+  </g>
+</svg>
