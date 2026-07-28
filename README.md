@@ -13,15 +13,22 @@ npm run build    # 型チェック + PWAビルド (dist/)
 
 ## 公開先
 
-**https://mogurumogana-beep.github.io/tenki-ikusei/** (GitHub Pages, `gh-pages` ブランチ)
+**https://mogurumogana-beep.github.io/tenki-ikusei/**
 
-再デプロイ: `powershell -ExecutionPolicy Bypass -File scripts\deploy.ps1`
+`main` にプッシュすると [GitHub Actions](.github/workflows/deploy.yml) が
+テスト→ビルド→公開まで自動実行する(**手動アップロード不要**)。
+テストが落ちるとデプロイされないので、壊れたものが公開されることはない。
 
-GitHub Actions での自動デプロイ用ワークフローは
-`.github/workflows/deploy.yml` にあるが**未コミット**
-(トークンに `workflow` スコープが必要なため)。有効化するには:
-`gh auth refresh -h github.com -s workflow` で再認証してから
-このファイルをコミット&プッシュする。
+`scripts\deploy.ps1` は自動デプロイが使えないときの手動デプロイ用に残してある。
+
+> 旧方式で使っていた `gh-pages` ブランチは、Actions方式に切り替えた現在は
+> 参照されていない。削除して構わない。
+
+## プライバシー方針
+
+- サーバーもアカウントもなく、育成データは端末の localStorage にのみ保存される
+- 外部に出るのは天気取得のための座標のみ。**約1km(小数点2桁)に丸めてから送信**し、
+  正確な位置は保存も送信もしない([geo.ts](src/logic/geo.ts))
 
 ## 構成(ロジックとUIの分離 — 仕様書§12)
 
@@ -44,11 +51,28 @@ public/assets/moko/  画像(現在はプレースホルダーSVG。同名で差�
 
 ## ⚠ 天気APIについて(未確定 — 仕様書§9)
 
-現在は **Open-Meteo を開発検証用の暫定実装** として使っている
-([openMeteo.ts](src/adapters/openMeteo.ts))。
-Open-Meteo の無料枠は**非商用限定**のため、リリース時のAPIは
-利用規約と気象業務法の観点で比較確認してから確定すること(気象庁公開データ /
-Apple WeatherKit 等)。差し替えは `WeatherProvider` 実装の追加のみで済む。
+現在は **Open-Meteo を無料・非商用の検証用** として使っている
+([openMeteo.ts](src/adapters/openMeteo.ts))。差し替えは `WeatherProvider`
+実装の追加のみで済む。
+
+規約を確認した結果(2026-07時点):
+
+| 項目 | 内容 |
+|---|---|
+| 無料枠 | 1日10,000回 / 1時間5,000回 / 1分600回。APIキー不要 |
+| ライセンス | CC BY 4.0(出典表示が必要。アプリのフッターに記載済み) |
+| 制限 | **無料枠は非商用限定**。規約上「サブスクリプションや広告を表示するアプリ」は商用扱い |
+
+**課金や広告を入れる段階になったら、以下の再設計が必要になる:**
+
+1. Open-Meteo の有料プランが必要になり、**APIキーが発行される**
+2. PWAはコードが全て公開されるため、**キーを埋め込むと露出する**
+   → 中継サーバーが必要になり、憲法2「サーバーを持たない」と衝突する
+3. GitHub Pages も規約で商用利用(ビジネス・SaaS運用)を禁じているため、
+   **Netlify や Cloudflare Pages への移転が必要**(両者は無料枠でも商用可)
+
+代替候補の気象庁データは「公共データ利用規約(第1.0版)」準拠で**出典明記すれば商用可**だが、
+公式APIとして提供されているわけではなく、仕様変更やアクセス制限のリスクを利用者が負う。
 
 - 表示は取得した公式データの提示のみ。独自予報は行わない
 - 平年値の代わりに過去14日の実測移動平均を基準値に使用(§5-1の代用ルール)
