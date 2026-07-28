@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160">
+  <!-- プレースホルダー: もこ(sleepy)。本番画像に差し替え可 -->
+  <g>
+    <ellipse cx="100" cy="120" rx="52" ry="10" fill="#dce9f2" opacity="0.6"/>
+    <g fill="#ffffff" stroke="#e3ecf4" stroke-width="2">
+      <circle cx="70" cy="88" r="25"/>
+      <circle cx="130" cy="88" r="25"/>
+      <circle cx="85" cy="68" r="27"/>
+      <circle cx="115" cy="68" r="27"/>
+      <circle cx="100" cy="92" r="31"/>
+    </g>
+    <ellipse cx="100" cy="85" rx="45" ry="33" fill="#ffffff"/>
+    <ellipse cx="83" cy="113" rx="7" ry="6" fill="#f3d9c8"/>
+    <ellipse cx="117" cy="113" rx="7" ry="6" fill="#f3d9c8"/>
+    <path d="M83 82 q5 3 10 0" stroke="#5a5a66" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M107 82 q5 3 10 0" stroke="#5a5a66" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="100" cy="94" rx="3" ry="4" fill="#5a5a66" opacity="0.7"/>
+    <g fill="#9db8d4" font-family="sans-serif" font-weight="bold">
+      <text x="140" y="52" font-size="14">z</text>
+      <text x="150" y="42" font-size="18">z</text>
+      <text x="162" y="30" font-size="22">z</text>
+    </g>
+  </g>
+</svg>
