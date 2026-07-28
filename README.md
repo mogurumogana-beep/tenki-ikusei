@@ -11,6 +11,18 @@ npm test         # ロジックのユニットテスト
 npm run build    # 型チェック + PWAビルド (dist/)
 ```
 
+## 公開先
+
+**https://mogurumogana-beep.github.io/tenki-ikusei/** (GitHub Pages, `gh-pages` ブランチ)
+
+再デプロイ: `powershell -ExecutionPolicy Bypass -File scripts\deploy.ps1`
+
+GitHub Actions での自動デプロイ用ワークフローは
+`.github/workflows/deploy.yml` にあるが**未コミット**
+(トークンに `workflow` スコープが必要なため)。有効化するには:
+`gh auth refresh -h github.com -s workflow` で再認証してから
+このファイルをコミット&プッシュする。
+
 ## 構成(ロジックとUIの分離 — 仕様書§12)
 
 ```
