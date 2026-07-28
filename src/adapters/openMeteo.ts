@@ -11,6 +11,7 @@
  * - 平年値の代わりに過去14日の実測移動平均を基準値として使う(§5-1の代用ルール)。
  */
 import { BASELINE_WINDOW_DAYS } from "../logic/constants";
+import { roundCoordinate } from "../logic/geo";
 import type { WeatherKind, WeatherSnapshot } from "../logic/types";
 import type { WeatherProvider } from "./weatherProvider";
 
@@ -41,8 +42,9 @@ export class OpenMeteoProvider implements WeatherProvider {
     locationLabel: string,
   ): Promise<WeatherSnapshot> {
     const url = new URL("https://api.open-meteo.com/v1/forecast");
-    url.searchParams.set("latitude", String(latitude));
-    url.searchParams.set("longitude", String(longitude));
+    // 正確な位置を第三者へ送らない(約1kmに丸める)
+    url.searchParams.set("latitude", String(roundCoordinate(latitude)));
+    url.searchParams.set("longitude", String(roundCoordinate(longitude)));
     url.searchParams.set(
       "current",
       "temperature_2m,relative_humidity_2m,pressure_msl,weather_code,wind_speed_10m",

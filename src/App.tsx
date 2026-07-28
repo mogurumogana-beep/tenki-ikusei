@@ -4,6 +4,7 @@ import { OpenMeteoProvider } from "./adapters/openMeteo";
 import { WEATHER_STALE_MS } from "./logic/constants";
 import { composeDialogue, dialogueSeed } from "./logic/dialogue";
 import type { DialogueDef } from "./logic/dialogue";
+import { roundCoordinate } from "./logic/geo";
 import { diffFromYesterday, judgeDayPart, judgeEnvironment } from "./logic/judge";
 import {
   MATERIAL_NAMES,
@@ -152,9 +153,10 @@ export default function App() {
           onClick={() => {
             navigator.geolocation.getCurrentPosition(
               (pos) => {
+                // 端末に保存する時点で丸めておき、正確な位置は保持しない
                 const loc = {
-                  latitude: pos.coords.latitude,
-                  longitude: pos.coords.longitude,
+                  latitude: roundCoordinate(pos.coords.latitude),
+                  longitude: roundCoordinate(pos.coords.longitude),
                   label: "現在地",
                 };
                 updateSave((prev) => ({ ...prev, location: loc }));
@@ -560,6 +562,7 @@ export default function App() {
         表示している気象情報は取得した公式データの提示であり、独自の予報ではありません。
         平年比は過去{effectiveSnapshot.baseline.windowDays}
         日間の平均との比較です。
+        位置情報は約1kmに丸めて送信し、それ以外のデータは端末内にのみ保存されます。
       </footer>
 
       {toast && (

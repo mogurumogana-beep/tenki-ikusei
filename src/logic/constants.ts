@@ -72,6 +72,13 @@ export const HARVEST = {
 /** 天気データの鮮度: これより古ければ再取得を試みる(ms) */
 export const WEATHER_STALE_MS = 60 * 60 * 1000;
 
+/**
+ * 外部APIに送る座標の精度(小数点以下の桁数)。
+ * 2桁 ≒ 約1km。天気の取得にはこれで十分なため、
+ * それ以上の精度を第三者に送らない(プライバシー配慮)。
+ */
+export const LOCATION_PRECISION_DECIMALS = 2;
+
 /** 時間帯の区切り(時) */
 export const DAY_PARTS = {
   MORNING_START: 5,

@@ -8,6 +8,7 @@ import {
 } from "./materials";
 import { decayedBoost, effectiveResistance, feed } from "./resistance";
 import { composeDialogue } from "./dialogue";
+import { roundCoordinate } from "./geo";
 import type { DialogueDef } from "./dialogue";
 import type { CharacterDef, EnvJudgement, SaveData } from "./types";
 import { RESISTANCE } from "./constants";
@@ -162,6 +163,23 @@ describe("採取と災害時の反転(§6-1・§7)", () => {
     const r = disasterAftermathHarvest("heavyRain");
     expect(r.material).toBe("shizukumo");
     expect(r.amount).toBeGreaterThan(0);
+  });
+});
+
+describe("座標のプライバシー", () => {
+  it("正確な座標を約1kmに丸める", () => {
+    expect(roundCoordinate(35.68123456)).toBe(35.68);
+    expect(roundCoordinate(139.76719)).toBe(139.77);
+  });
+
+  it("南半球・西経(負の値)でも丸まる", () => {
+    expect(roundCoordinate(-33.86887)).toBe(-33.87);
+    expect(roundCoordinate(-151.20929)).toBe(-151.21);
+  });
+
+  it("丸めた座標を再度丸めても変わらない", () => {
+    const once = roundCoordinate(35.68123456);
+    expect(roundCoordinate(once)).toBe(once);
   });
 });
 
