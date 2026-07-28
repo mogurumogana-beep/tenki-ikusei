@@ -22,6 +22,18 @@ export const BASELINE_DELTA = {
 /** 基準値に使う移動平均の日数(仕様書§5-1: 7〜14日) */
 export const BASELINE_WINDOW_DAYS = 14;
 
+/** 取得する予報の日数(週間予報の表示に使う) */
+export const FORECAST_DAYS = 7;
+
+/** 画面に出す時間別予報のコマ数(1コマ=1時間) */
+export const FORECAST_HOURS = 24;
+
+/**
+ * この降水確率(%)以上なら「かさ、いるかも」と先回りで知らせる。
+ * 仕様書§5-4の「今日雨だって、傘だしとこ」を予報から出すための閾値。
+ */
+export const RAIN_HINT_CHANCE_PCT = 40;
+
 /** 機嫌スコアの係数(仕様書§5-3) */
 export const MOOD_SCORE = {
   /** 好きな天気ボーナス */

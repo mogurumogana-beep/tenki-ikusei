@@ -10,9 +10,18 @@
  * - 気圧の「変化」は過去実況の差分であり予報ではない。
  * - 平年値の代わりに過去14日の実測移動平均を基準値として使う(§5-1の代用ルール)。
  */
-import { BASELINE_WINDOW_DAYS } from "../logic/constants";
+import {
+  BASELINE_WINDOW_DAYS,
+  FORECAST_DAYS,
+  FORECAST_HOURS,
+} from "../logic/constants";
 import { roundCoordinate } from "../logic/geo";
-import type { WeatherKind, WeatherSnapshot } from "../logic/types";
+import type {
+  DailyForecast,
+  HourlyForecast,
+  WeatherKind,
+  WeatherSnapshot,
+} from "../logic/types";
 import type { WeatherProvider } from "./weatherProvider";
 
 /** 強風判定の風速閾値(m/s)。天気コードに強風がないためアダプタ側で判定 */
@@ -32,6 +41,17 @@ interface OpenMeteoResponse {
     temperature_2m: number[];
     relative_humidity_2m: number[];
     pressure_msl: number[];
+    weather_code: number[];
+    precipitation_probability: (number | null)[];
+    wind_speed_10m: number[];
+  };
+  daily: {
+    time: string[];
+    weather_code: number[];
+    temperature_2m_max: number[];
+    temperature_2m_min: number[];
+    precipitation_probability_max: (number | null)[];
+    wind_speed_10m_max: number[];
   };
 }
 
@@ -51,10 +71,14 @@ export class OpenMeteoProvider implements WeatherProvider {
     );
     url.searchParams.set(
       "hourly",
-      "temperature_2m,relative_humidity_2m,pressure_msl",
+      "temperature_2m,relative_humidity_2m,pressure_msl,weather_code,precipitation_probability,wind_speed_10m",
+    );
+    url.searchParams.set(
+      "daily",
+      "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max",
     );
     url.searchParams.set("past_days", String(BASELINE_WINDOW_DAYS));
-    url.searchParams.set("forecast_days", "1");
+    url.searchParams.set("forecast_days", String(FORECAST_DAYS));
     url.searchParams.set("wind_speed_unit", "ms");
     url.searchParams.set("timezone", "auto");
 
@@ -73,7 +97,7 @@ export function toSnapshot(
   locationLabel: string,
   now: number,
 ): WeatherSnapshot {
-  const { current, hourly } = data;
+  const { current, hourly, daily } = data;
 
   const weather = mapWeather(current.weather_code, current.wind_speed_10m);
 
@@ -100,6 +124,36 @@ export function toSnapshot(
         }
       : null;
 
+  // --- これから先の時間別予報(公式予報をそのまま提示する) ---
+  const hourlyForecast: HourlyForecast[] = [];
+  for (
+    let i = currentIdx + 1;
+    i < hourly.time.length && hourlyForecast.length < FORECAST_HOURS;
+    i++
+  ) {
+    hourlyForecast.push({
+      time: Date.parse(hourly.time[i]),
+      hour: hourOfLocalIsoString(hourly.time[i]),
+      weather: mapWeather(hourly.weather_code[i], hourly.wind_speed_10m[i]),
+      temperatureC: hourly.temperature_2m[i],
+      precipitationChance: hourly.precipitation_probability[i] ?? 0,
+    });
+  }
+
+  // --- 日別予報。過去日(past_days分)は捨てて今日以降だけ残す ---
+  const todayKey = data.current.time.slice(0, 10);
+  const dailyForecast: DailyForecast[] = [];
+  for (let i = 0; i < daily.time.length; i++) {
+    if (daily.time[i] < todayKey) continue;
+    dailyForecast.push({
+      date: daily.time[i],
+      weather: mapWeather(daily.weather_code[i], daily.wind_speed_10m_max[i]),
+      tempMaxC: daily.temperature_2m_max[i],
+      tempMinC: daily.temperature_2m_min[i],
+      precipitationChance: daily.precipitation_probability_max[i] ?? 0,
+    });
+  }
+
   return {
     fetchedAt: now,
     locationLabel,
@@ -114,8 +168,19 @@ export function toSnapshot(
       windowDays: Math.round((currentIdx + 1 - start) / 24),
     },
     yesterday,
+    hourly: hourlyForecast,
+    daily: dailyForecast,
     severe: isSevereCode(current.weather_code),
   };
+}
+
+/**
+ * Open-Meteo は timezone=auto のとき現地時刻をオフセットなしの
+ * "2026-07-29T15:00" 形式で返す。Date に通すと環境依存になるため、
+ * 文字列から直接「時」を取り出す。
+ */
+function hourOfLocalIsoString(iso: string): number {
+  return Number(iso.slice(11, 13));
 }
 
 /**

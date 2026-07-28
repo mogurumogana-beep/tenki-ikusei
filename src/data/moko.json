@@ -4,11 +4,14 @@
     "name": "もこ",
     "constitution": "cottonCandy",
     "sprites": {
-      "normal": "/assets/moko/normal.svg",
-      "happy": "/assets/moko/happy.svg",
-      "sad": "/assets/moko/sad.svg",
-      "wet": "/assets/moko/wet.svg",
-      "sleepy": "/assets/moko/sleepy.svg"
+      "normal": "assets/moko/normal.webp",
+      "happy": "assets/moko/happy.webp",
+      "sad": "assets/moko/sad.webp",
+      "wet": "assets/moko/wet.webp",
+      "sleepy": "assets/moko/sleepy.webp",
+      "umbrella": "assets/moko/umbrella.webp",
+      "blanket": "assets/moko/blanket.webp",
+      "gloomy": "assets/moko/gloomy.webp"
     },
     "favoriteWeather": ["sunny", "cloudy"],
     "weakWeather": ["rain", "heavyRain", "snow", "thunder"],

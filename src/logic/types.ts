@@ -32,8 +32,20 @@ export type DayPart = "morning" | "daytime" | "evening" | "night";
 /** 体質 */
 export type Constitution = "cottonCandy" | "jelly";
 
-/** キャラの表情画像キー(仕様書§4) */
-export type SpriteKey = "normal" | "happy" | "sad" | "wet" | "sleepy";
+/**
+ * キャラの表情画像キー(仕様書§4)。
+ * umbrella / blanket はお世話をしてもらった直後の姿、
+ * gloomy は気圧低下でぐったりしている姿。
+ */
+export type SpriteKey =
+  | "normal"
+  | "happy"
+  | "sad"
+  | "wet"
+  | "sleepy"
+  | "umbrella"
+  | "blanket"
+  | "gloomy";
 
 /** お世話アクション3種(仕様書§10) */
 export type CareAction = "umbrella" | "indoor" | "wipe";
@@ -47,6 +59,32 @@ export type MaterialId =
   | "pirigumo"
   | "moyagumo"
   | "kazegumo";
+
+/**
+ * 時間別の予報1コマ。
+ * 公式発表の予報をそのまま提示するためのもの(仕様書§9: 独自予報をしない)。
+ */
+export interface HourlyForecast {
+  /** 予報時刻(epoch ms) */
+  time: number;
+  /** ローカル時(0-23) */
+  hour: number;
+  weather: WeatherKind;
+  temperatureC: number;
+  /** 降水確率(%) */
+  precipitationChance: number;
+}
+
+/** 日別の予報1日分 */
+export interface DailyForecast {
+  /** YYYY-MM-DD(ローカル) */
+  date: string;
+  weather: WeatherKind;
+  tempMaxC: number;
+  tempMinC: number;
+  /** その日の最大降水確率(%) */
+  precipitationChance: number;
+}
 
 /**
  * アダプタ層が返す正規化済みの天気スナップショット。
@@ -84,6 +122,10 @@ export interface WeatherSnapshot {
     temperatureC: number;
     humidityPct: number;
   } | null;
+  /** これから先の時間別予報(直近24時間程度) */
+  hourly: HourlyForecast[];
+  /** 今日を含む日別予報 */
+  daily: DailyForecast[];
   /**
    * 災害級の天気か。アダプタが公式情報(警報等)から判定できる場合に true。
    * MVPでは天気カテゴリからの機械判定(§7)。

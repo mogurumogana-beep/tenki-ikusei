@@ -24,6 +24,19 @@ npm run build    # 型チェック + PWAビルド (dist/)
 > 旧方式で使っていた `gh-pages` ブランチは、Actions方式に切り替えた現在は
 > 参照されていない。削除して構わない。
 
+## キャラ画像の差し替え
+
+透過PNGを用意して、`scripts/import-art.mjs` の `MAP` にファイル名と状態名を書き、
+
+```bash
+node scripts/import-art.mjs <画像フォルダのパス>
+```
+
+余白の自動トリム・リサイズ・WebP変換をして `public/assets/moko/` に出力する。
+
+状態は8種類: `normal` / `happy` / `sad` / `wet`(溶けかけ) / `sleepy` /
+`umbrella`(傘をさしてもらった) / `blanket`(くるまれた) / `gloomy`(気圧でぐったり)
+
 ## プライバシー方針
 
 - サーバーもアカウントもなく、育成データは端末の localStorage にのみ保存される
@@ -45,8 +58,9 @@ src/
   adapters/     天気API → 内部型への変換層(API差し替え可能)
   data/         キャラ定義JSON(画像パス・セリフ・体質。2体目はJSON追加のみ)
   state/        localStorage 永続化(サーバーなし、§2)
+    outlook.ts     予報から先回りの声かけを作る(§5-4)
   ui/ + App.tsx UI層
-public/assets/moko/  画像(現在はプレースホルダーSVG。同名で差し替え可)
+public/assets/moko/  キャラ画像(webp)。差し替えは scripts/import-art.mjs で取り込む
 ```
 
 ## ⚠ 天気APIについて(未確定 — 仕様書§9)

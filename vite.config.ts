@@ -31,8 +31,10 @@ export default defineConfig({
       },
       workbox: {
         // 天気APIのレスポンスはアプリ側でlocalStorageにキャッシュするため
-        // SWでは静的アセットのみ扱う
-        globPatterns: ["**/*.{js,css,html,svg,png,json}"],
+        // SWでは静的アセットのみ扱う。キャラ画像(webp)もオフラインで出したい
+        globPatterns: ["**/*.{js,css,html,svg,png,webp,json}"],
+        // キャラ画像を含めると既定の2MiB上限に近づくため広げておく
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
       },
     }),
   ],

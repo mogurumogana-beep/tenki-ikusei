@@ -134,7 +134,14 @@ export function calcMood(input: MoodInput): MoodResult {
     fluff,
     needsCare,
     protectedToday,
-    sprite: pickSprite({ env, mood, needsCare, dayPart }),
+    sprite: pickSprite({
+      env,
+      mood,
+      needsCare,
+      dayPart,
+      lastCare: careDoneToday[careDoneToday.length - 1] ?? null,
+      protectedToday,
+    }),
   };
 }
 
@@ -143,14 +150,26 @@ function pickSprite(args: {
   mood: Mood;
   needsCare: boolean;
   dayPart: DayPart;
+  lastCare: CareAction | null;
+  protectedToday: boolean;
 }): SpriteKey {
-  const { env, mood, needsCare, dayPart } = args;
+  const { env, mood, needsCare, dayPart, lastCare, protectedToday } = args;
+
   // 濡れ系の弱点を放置されているときは wet が最優先
   if (needsCare && WET_WEATHER.includes(env.weather)) return "wet";
+
+  // 守ってもらった姿を見せる(お世話の手応え)
+  if (protectedToday && lastCare === "umbrella") return "umbrella";
+  if (protectedToday && (lastCare === "indoor" || lastCare === "wipe")) {
+    return "blanket";
+  }
+
+  // 気圧が下がっている日はぐったり(§5-3の気圧ペナルティを絵でも見せる)
+  if (env.pressure !== "stable") return "gloomy";
+
   if (mood === "sad") return "sad";
+  if (dayPart === "night") return "sleepy";
   if (mood === "happy") return "happy";
-  // 夜と気圧低下時は眠そうにする(§5-5: 時間帯でも変化)
-  if (dayPart === "night" || env.pressure !== "stable") return "sleepy";
   return "normal";
 }
 
