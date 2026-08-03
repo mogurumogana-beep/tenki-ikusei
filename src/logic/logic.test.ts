@@ -9,6 +9,8 @@ import {
 import { decayedBoost, effectiveResistance, feed } from "./resistance";
 import { composeDialogue } from "./dialogue";
 import { roundCoordinate } from "./geo";
+import { buildOutlook } from "./outlook";
+import { normalizeSnapshot } from "../state/storage";
 import type { DialogueDef } from "./dialogue";
 import type { CharacterDef, EnvJudgement, SaveData } from "./types";
 import { RESISTANCE } from "./constants";
@@ -166,6 +168,50 @@ describe("採取と災害時の反転(§6-1・§7)", () => {
     const r = disasterAftermathHarvest("heavyRain");
     expect(r.material).toBe("shizukumo");
     expect(r.amount).toBeGreaterThan(0);
+  });
+});
+
+describe("保存データの読み込み(壊れていても動くこと)", () => {
+  // 一度配ったPWAには古い形のデータが残る。読み込みで落ちると
+  // 画面が真っ白になり利用者が復旧できないため、ここは必ず守る。
+  it("予報を持たない旧データでも空配列で補う", () => {
+    const old = {
+      fetchedAt: 1,
+      locationLabel: "東京",
+      weather: "cloudy",
+      temperatureC: 23,
+      humidityPct: 90,
+      pressureHpa: 1006,
+      pressureChange6hHpa: 0,
+      baseline: { temperatureC: 27, humidityPct: 88, windowDays: 14 },
+      yesterday: null,
+      severe: false,
+    };
+    const normalized = normalizeSnapshot(old);
+    expect(normalized).not.toBeNull();
+    expect(normalized!.hourly).toEqual([]);
+    expect(normalized!.daily).toEqual([]);
+  });
+
+  it("空配列に補われた天気でも見通しの計算が落ちない", () => {
+    const normalized = normalizeSnapshot({
+      fetchedAt: 1,
+      locationLabel: "東京",
+      weather: "sunny",
+      temperatureC: 20,
+      humidityPct: 50,
+      pressureHpa: 1013,
+      baseline: { temperatureC: 20, humidityPct: 50, windowDays: 14 },
+    })!;
+    const outlook = buildOutlook(normalized);
+    expect(outlook.shouldPrepare).toBe(false);
+    expect(outlook.maxRainChance).toBe(0);
+  });
+
+  it("判定に必要な値が欠けたデータは捨てる(取得し直させる)", () => {
+    expect(normalizeSnapshot(null)).toBeNull();
+    expect(normalizeSnapshot({ weather: "sunny" })).toBeNull();
+    expect(normalizeSnapshot("こわれたデータ")).toBeNull();
   });
 });
 

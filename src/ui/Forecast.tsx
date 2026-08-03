@@ -16,7 +16,7 @@ export function HourlyStrip({
   nowTemperatureC: number;
   nowWeather: HourlyForecast["weather"];
 }) {
-  if (hours.length === 0) return null;
+  if (!hours || hours.length === 0) return null;
   return (
     <div className="hourly-strip">
       <div className="hour-cell now">
@@ -47,7 +47,7 @@ export function HourlyStrip({
 
 /** 週間予報 */
 export function WeeklyForecast({ days }: { days: DailyForecast[] }) {
-  if (days.length === 0) {
+  if (!days || days.length === 0) {
     return <p className="note">予報データがまだありません</p>;
   }
   const allMin = Math.min(...days.map((d) => d.tempMinC));
@@ -88,6 +88,9 @@ export function WeeklyForecast({ days }: { days: DailyForecast[] }) {
 
 /** きょうの素材が何になるかを予報から見せる(仕様書§6-1の動機づけ) */
 export function MaterialOutlook({ days }: { days: DailyForecast[] }) {
+  if (!days || days.length === 0) {
+    return <p className="note">予報が とれたら ここに出るよ</p>;
+  }
   return (
     <ul className="material-outlook">
       {days.slice(0, 5).map((d, i) => (

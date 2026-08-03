@@ -38,7 +38,8 @@ export function buildOutlook(
   snapshot: WeatherSnapshot,
   hoursAhead = 12,
 ): Outlook {
-  const window = snapshot.hourly.slice(0, hoursAhead);
+  // 予報を持たない古い保存データでも落ちないようにする
+  const window = (snapshot.hourly ?? []).slice(0, hoursAhead);
   if (window.length === 0) {
     return {
       maxRainChance: 0,

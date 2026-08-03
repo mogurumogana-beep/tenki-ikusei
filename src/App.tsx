@@ -134,7 +134,10 @@ export default function App() {
     const loc = save.location;
     if (!loc) return;
     const stale =
-      !snapshot || Date.now() - snapshot.fetchedAt > WEATHER_STALE_MS;
+      !snapshot ||
+      Date.now() - snapshot.fetchedAt > WEATHER_STALE_MS ||
+      // 予報を持たない古い保存データは、鮮度に関わらず取り直す
+      snapshot.hourly.length === 0;
     if (stale) void refreshWeather(loc);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
