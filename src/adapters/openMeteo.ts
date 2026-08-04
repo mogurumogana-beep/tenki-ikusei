@@ -43,7 +43,9 @@ interface OpenMeteoResponse {
     pressure_msl: number[];
     weather_code: number[];
     precipitation_probability: (number | null)[];
+    precipitation: (number | null)[];
     wind_speed_10m: number[];
+    is_day: number[];
   };
   daily: {
     time: string[];
@@ -71,7 +73,7 @@ export class OpenMeteoProvider implements WeatherProvider {
     );
     url.searchParams.set(
       "hourly",
-      "temperature_2m,relative_humidity_2m,pressure_msl,weather_code,precipitation_probability,wind_speed_10m",
+      "temperature_2m,relative_humidity_2m,pressure_msl,weather_code,precipitation_probability,precipitation,wind_speed_10m,is_day",
     );
     url.searchParams.set(
       "daily",
@@ -137,6 +139,9 @@ export function toSnapshot(
       weather: mapWeather(hourly.weather_code[i], hourly.wind_speed_10m[i]),
       temperatureC: hourly.temperature_2m[i],
       precipitationChance: hourly.precipitation_probability[i] ?? 0,
+      precipitationMm: hourly.precipitation[i] ?? 0,
+      pressureHpa: hourly.pressure_msl[i],
+      isDay: hourly.is_day[i] === 1,
     });
   }
 

@@ -73,6 +73,12 @@ export interface HourlyForecast {
   temperatureC: number;
   /** 降水確率(%) */
   precipitationChance: number;
+  /** 降水量(mm)。確率だけでは雨の強さが分からないため併せて持つ */
+  precipitationMm: number;
+  /** 海面気圧(hPa)。気圧グラフに使う */
+  pressureHpa: number;
+  /** 昼か(グラフの昼夜帯に使う) */
+  isDay: boolean;
 }
 
 /** 日別の予報1日分 */

@@ -31,6 +31,8 @@ import {
   MaterialOutlook,
   WeeklyForecast,
 } from "./ui/Forecast";
+import { PressureChart } from "./ui/PressureChart";
+import { TimelineChart } from "./ui/TimelineChart";
 import { WeatherIcon } from "./ui/WeatherIcon";
 import { WeatherScene } from "./ui/WeatherScene";
 import {
@@ -635,11 +637,28 @@ export default function App() {
               )}
             </Card>
 
+            <Card title="きょうの ながれ" icon="📈">
+              <TimelineChart
+                hours={effectiveSnapshot.hourly}
+                nowTemperatureC={effectiveSnapshot.temperatureC}
+                nowWeather={env.weather}
+              />
+            </Card>
+
             <Card title="時間別" icon="🕐">
               <HourlyStrip
                 hours={effectiveSnapshot.hourly}
                 nowTemperatureC={effectiveSnapshot.temperatureC}
                 nowWeather={env.weather}
+              />
+            </Card>
+
+            <Card title={`気圧と ${character.name}`} icon="🌀">
+              <PressureChart
+                hours={effectiveSnapshot.hourly}
+                nowPressureHpa={effectiveSnapshot.pressureHpa}
+                sprites={character.sprites}
+                characterName={character.name}
               />
             </Card>
 
